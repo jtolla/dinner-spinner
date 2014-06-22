@@ -219,7 +219,7 @@
               holdCounter = 0;
               $("div[id*='recipe']").each(function() {
                 storeRecipeIds.push($(this).attr("id").substring(6));
-                if($(this).children().hasClass("btn-primary")) {
+                if($(this).children().hasClass("btn-default")) {
                   holdCounter++;
                 }
               });
@@ -263,13 +263,12 @@
                     recipeImages.push(recipe.get("image").url());
                 });
                 $("div[id*='recipe']").each(function() {
-                  if($(this).children().hasClass("btn-primary")) {
+                  if($(this).children().hasClass("btn-default")) {
                     $(this).fadeOut(function() {
                       $(this).attr("id", "recipe" + spinAgainRanNums[counter]);
                       $(this).children("a").not(".btn-xs").attr("href", recipeLinks[spinAgainRanNums[counter]]);
                       $(this).children("a:first-of-type").text(recipeNames[spinAgainRanNums[counter]]);
                       $(this).find("img").attr("src", recipeImages[spinAgainRanNums[counter]]);
-                      $(this).children(".btn-primary").removeClass("btn-primary").addClass("btn-default")
                     counter++;
                     }).fadeIn();
                   }
