@@ -64,7 +64,13 @@
           </div>
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-              <li><a href="#">What is this?</a></li>
+              <li>
+                <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://jtolla.github.io/dinner-spinner/" data-text="Randomly generated meals!" data-hashtags="dinnerspinner" data-dnt="true">Tweet</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+              </li>
+              <li>
+                <div class="g-plusone" data-size="medium" data-href="http://jtolla.github.io/dinner-spinner/"></div>
+              </li>
             </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -212,6 +218,13 @@
 
         Backbone.history.start();
 
+    </script>
+    <script type="text/javascript">
+      (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/platform.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+      })();
     </script>
   </body>
 </html>
