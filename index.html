@@ -151,13 +151,6 @@
             className: 'Recipes'
         });
 
-        var RecipeList = Backbone.View.extend({
-            el: '.jumbotron .container',
-            render: function() {
-                // TODO
-            }
-        });
-
         var SpinResults = Backbone.View.extend({
           el: '.jumbotron .container',
             render: function() {
@@ -167,11 +160,11 @@
               var ranNums = [];
               query.count({
                 success: function(count) {
-                  while(ranNums.length < 5){
+                  while (ranNums.length < 5){
                     var randomnumber = Math.floor(Math.random() * count);
                     var found = false;
-                    for (var i=0; i < ranNums.length;i++){
-                      if(ranNums[i] == randomnumber) {
+                    for (var i = 0; i < ranNums.length; i++) {
+                      if (ranNums[i] == randomnumber) {
                         found = true;
                         break;
                       }
@@ -215,69 +208,19 @@
             }
         });
 
-        var EditRecipe = Backbone.View.extend({
-            el: '.jumbotron',
-            render: function (options) {
-                var that = this;
-                if(options.id) {
-                    that.recipe = new Recipe({id: options.id});
-                    that.recipe.fetch({
-                        success: function(recipe) {
-                            var template = _.template($("#edit-recipe-template").html(), {recipe: recipe});
-                            that.$el.html(template);
-                        }
-                    });
-                } else {
-                    var template = _.template($("#edit-recipe-template").html(), {recipe: null});
-                            this.$el.html(template);
-                }
-            },
-            events: {
-                'submit .edit-recipe-form': 'saveRecipe',
-                'click .delete': 'deleteRecipe',
-            },
-            saveRecipe: function(ev) {
-                var recipeDetails = $(ev.currentTarget).serializeObject();
-                var recipe = new Recipe();
-                recipe.save(recipeDetails, {
-                    success: function(recipe) {
-                        router.navigate('',{trigger: true});
-                    }
-                });
-                console.log(recipeDetails);
-                return false;
-            },
-            deleteRecipe: function(ev) {
-                this.recipe.destroy({
-                    success: function() {
-                        router.navigate('', {trigger: true});
-                    }
-                });
-                return false
-            }
-        });
-
         var Router = Backbone.Router.extend({
             routes: {
                 '': 'home',
-                'new': 'editRecipe',
-                'edit/:id': 'editRecipe',
                 'spin': 'spinResults'
             }
         });
 
-        var recipeList = new RecipeList();
-        var editRecipe = new EditRecipe();
         var spinResults = new SpinResults();
 
         var router = new Router();
 
         router.on('route:home', function () {
-            recipeList.render();
-        });
 
-        router.on('route:editRecipe', function (id) {
-            editRecipe.render({id: id});
         });
 
         router.on('route:spinResults', function () {
