@@ -208,7 +208,11 @@
             },
             holdRecipe: function(ev) {
               ev.preventDefault();
-              $(ev.target).removeClass("btn-default").addClass("btn-primary");
+              if ($(ev.target).hasClass("btn-default")) {
+                $(ev.target).removeClass("btn-default").addClass("btn-primary");
+              } else {
+                $(ev.target).removeClass("btn-primary").addClass("btn-default");
+              }
             }
         });
 
