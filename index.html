@@ -115,11 +115,11 @@
       <div class="jumbotron">
         <h1>Find great meals!</h1>
         <p>Not sure what to make for dinner?</p>
-        <p>
-          <a class="btn btn-lg btn-success" href="#spin" role="button">Spin!</a>
-        </p>
-        <hr>
         <div class="container">
+          <p>
+            <a class="btn btn-lg btn-success" href="#spin" role="button">Spin!</a>
+          </p>
+          <hr>
           <div class="row">
             <div class="col-md-4">
               <h4>Step 1</h4>
@@ -164,10 +164,10 @@
               var ranNums = [];
               query.count({
                 success: function(count) {
-                  while (ranNums.length < 5){
+                  while(ranNums.length < 5){
                     var randomnumber = Math.floor(Math.random() * count);
                     var found = false;
-                    for (var i = 0; i < ranNums.length; i++) {
+                    for (var i=0; i < ranNums.length; i++){
                       if (ranNums[i] == randomnumber) {
                         found = true;
                         break;
@@ -189,7 +189,7 @@
               var counter = 0;
               query.find().then(function(results) {
                 that.$el.fadeOut(function() {
-                  that.$el.html("<div class='row'><div class='col-md-1' id='spinResults'></div><div class='col-md-1'></div></div>"); 
+                  that.$el.html("<p><a class='btn btn-lg btn-success re-spin' href='#' role='button'>Re-Spin!</a></p><hr><div class='container'><div class='row'><div class='col-md-1' id='spinResults'></div><div class='col-md-1'></div></div></div>"); 
                   _(results).each(function(recipe) {
                     recipeLinks.push(recipe.get("link"));
                     recipeNames.push(recipe.get("name"));
@@ -201,19 +201,80 @@
                   }
                 });
                 that.$el.fadeIn();
+                $("#spinButtonHolder .btn-success").remove();
+                $("#spinButtonHolder").append("<a href='#' id='reSpin' class='btn btn-success btn-lg'>Re-Spin!</a>");
               });
             },
             events: {
                 'click .btn-default': 'holdRecipe',
-                'click .btn-primary': 'holdRecipe'
+                'click .re-spin': 'spinAgain'
             },
             holdRecipe: function(ev) {
               ev.preventDefault();
-              if ($(ev.target).hasClass("btn-default")) {
-                $(ev.target).removeClass("btn-default").addClass("btn-primary");
-              } else {
-                $(ev.target).removeClass("btn-primary").addClass("btn-default");
-              }
+              $(ev.target).removeClass("btn-default").addClass("btn-primary");
+            },
+            spinAgain: function(ev) {
+              ev.preventDefault();
+              var storeRecipeIds = [];
+              holdCounter = 0;
+              $("div[id*='recipe']").each(function() {
+                storeRecipeIds.push($(this).attr("id").substring(6));
+                if($(this).children().hasClass("btn-primary")) {
+                  holdCounter++;
+                }
+              });
+              var spinAgainRecipes = new Recipes();
+              var spinAgainQuery = new Parse.Query(Recipe);
+              var spinAgainRanNums = [];
+              spinAgainQuery.count({
+                success: function(count) {
+                  while(spinAgainRanNums.length < holdCounter){
+                    var randomnumber = Math.floor(Math.random() * count);
+                    var found = false;
+                    for (var i=0; i < spinAgainRanNums.length; i++){
+                      if (spinAgainRanNums[i] == randomnumber) {
+                        found = true;
+                        break;
+                      }
+                    }
+                    for (var i=0; i < storeRecipeIds.length; i++){
+                      if (storeRecipeIds[i] == randomnumber) {
+                        found = true;
+                        break;
+                      }
+                    }
+                    if (!found) {
+                      spinAgainRanNums[spinAgainRanNums.length] = randomnumber;
+                    }
+                  }
+                },
+                error: function(error) {
+                  alert("Oops! There was an error.");
+                }
+              });
+              var recipeLinks = [];
+              var recipeNames = [];
+              var recipeImages = [];
+              var counter = 0;
+              spinAgainQuery.find().then(function(results) {
+                _(results).each(function(recipe) {
+                    recipeLinks.push(recipe.get("link"));
+                    recipeNames.push(recipe.get("name"));
+                    recipeImages.push(recipe.get("image").url());
+                });
+                $("div[id*='recipe']").each(function() {
+                  if($(this).children().hasClass("btn-primary")) {
+                    $(this).fadeOut(function() {
+                      $(this).attr("id", "recipe" + spinAgainRanNums[counter]);
+                      $(this).children("a").not(".btn-xs").attr("href", recipeLinks[spinAgainRanNums[counter]]);
+                      $(this).children("a:first-of-type").text(recipeNames[spinAgainRanNums[counter]]);
+                      $(this).children("img").attr(recipeImages[spinAgainRanNums[counter]]);
+                      $(this).children(".btn-primary").removeClass("btn-primary").addClass("btn-default")
+                    counter++;
+                    }).fadeIn();
+                  }
+                });
+              });
             }
         });
 
