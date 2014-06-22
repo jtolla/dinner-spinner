@@ -268,7 +268,7 @@
                       $(this).attr("id", "recipe" + spinAgainRanNums[counter]);
                       $(this).children("a").not(".btn-xs").attr("href", recipeLinks[spinAgainRanNums[counter]]);
                       $(this).children("a:first-of-type").text(recipeNames[spinAgainRanNums[counter]]);
-                      $(this).children("img").attr(recipeImages[spinAgainRanNums[counter]]);
+                      $(this).children("img").attr("src", recipeImages[spinAgainRanNums[counter]]);
                       $(this).children(".btn-primary").removeClass("btn-primary").addClass("btn-default")
                     counter++;
                     }).fadeIn();
