@@ -1,1 +1,218 @@
-Hello world!
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+    <title>DinnerSpinner</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+      .navbar {
+        margin-bottom: 20px;
+      }
+      .jumbotron {
+        text-align: center;
+        background-color: white;
+      }
+      .btn-success {
+        margin-bottom: 70px;
+      }
+      .navbar-brand img {
+        margin-top: -5px;
+      }
+      .thumbnail:hover {
+        border-color: #66afe9;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+      }
+      a:hover {
+        text-decoration: none;
+      }
+    </style>
+    <script src="//www.parsecdn.com/js/parse-1.2.18.min.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <!-- Static navbar -->
+      <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">DinnerSpinner <img src="img/logoimg.png" width="30px" /></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#">What is this?</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </div>
+
+      <div class="jumbotron">
+        <h1>Find great meals!</h1>
+        <p>Not sure what to make for dinner?</p>
+        <p>
+          <a class="btn btn-lg btn-success" href="#spin" role="button">Spin!</a>
+        </p>
+        <hr>
+        <div class="container">
+          <div class="row">
+            <div class="col-md-4">
+              <h4>Step 1</h4>
+              <p>Click spin!</p>
+            </div>
+            <div class="col-md-4">
+              <h4>Step 2</h4>
+              <p>Hold your favorite recipes.</p>
+            </div>
+            <div class="col-md-4">
+              <h4>Step 3</h4>
+              <p>Re-spin until you get a full week of recipes you love. <span class="glyphicon glyphicon-heart"></span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- /container -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+    <script>
+
+        Parse.initialize("AzsMQJINkoiTEpLlDi13enZzmOnGMxS8aMqn8hzG", "EAUJFOuO0Spez1zc5mbQW7F41NuSaX1aBvhv0M8g");
+
+        var Recipes = Parse.Collection.extend({
+            model: 'Recipe'
+        });
+
+        var Recipe = Parse.Object.extend({
+            className: 'Recipes'
+        });
+
+        var RecipeList = Backbone.View.extend({
+            el: '.jumbotron .container',
+            render: function() {
+                // TODO
+            }
+        });
+
+        var SpinResults = Backbone.View.extend({
+          el: '.jumbotron .container',
+            render: function() {
+              var that = this;
+              var recipes = new Recipes();
+              var query = new Parse.Query(Recipe);
+              query.limit(5);
+              query.find().then(function(results) {
+                that.$el.fadeOut(function() {
+                  that.$el.html("<div class='row'><div class='col-md-1' id='spinResults'></div><div class='col-md-1'></div></div>");
+                  var dayOfWeek = ["Fri","Thu","Wed","Tue","Mon"];
+                  var counter = 0;
+                  _(results).each(function(recipe) {
+                    $("#spinResults").after("<div class='col-md-2'><h3>" + dayOfWeek[counter] + "</h3><a href='" + recipe.get("link") + "' target='_blank'>" + recipe.get("name") + "</a><br><a href='" + recipe.get("link") + "' target='_blank'><img src='" + recipe.get("image").url() + "' class='thumbnail' style='margin: 10px auto 0 auto' width='100' height='100'></a></div>");
+                    counter++;
+                  });
+                });
+                that.$el.fadeIn();
+              });
+            }
+        });
+
+        var EditRecipe = Backbone.View.extend({
+            el: '.jumbotron',
+            render: function (options) {
+                var that = this;
+                if(options.id) {
+                    that.recipe = new Recipe({id: options.id});
+                    that.recipe.fetch({
+                        success: function(recipe) {
+                            var template = _.template($("#edit-recipe-template").html(), {recipe: recipe});
+                            that.$el.html(template);
+                        }
+                    });
+                } else {
+                    var template = _.template($("#edit-recipe-template").html(), {recipe: null});
+                            this.$el.html(template);
+                }
+            },
+            events: {
+                'submit .edit-recipe-form': 'saveRecipe',
+                'click .delete': 'deleteRecipe',
+            },
+            saveRecipe: function(ev) {
+                var recipeDetails = $(ev.currentTarget).serializeObject();
+                var recipe = new Recipe();
+                recipe.save(recipeDetails, {
+                    success: function(recipe) {
+                        router.navigate('',{trigger: true});
+                    }
+                });
+                console.log(recipeDetails);
+                return false;
+            },
+            deleteRecipe: function(ev) {
+                this.recipe.destroy({
+                    success: function() {
+                        router.navigate('', {trigger: true});
+                    }
+                });
+                return false
+            }
+        });
+
+        var Router = Backbone.Router.extend({
+            routes: {
+                '': 'home',
+                'new': 'editRecipe',
+                'edit/:id': 'editRecipe',
+                'spin': 'spinResults'
+            }
+        });
+
+        var recipeList = new RecipeList();
+        var editRecipe = new EditRecipe();
+        var spinResults = new SpinResults();
+
+        var router = new Router();
+
+        router.on('route:home', function () {
+            recipeList.render();
+        });
+
+        router.on('route:editRecipe', function (id) {
+            editRecipe.render({id: id});
+        });
+
+        router.on('route:spinResults', function () {
+            spinResults.render();
+        });
+
+        Backbone.history.start();
+
+    </script>
+  </body>
+</html>
+
